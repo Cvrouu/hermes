@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Projet Hermes</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=DM+Sans:wght@300;400;500;600;700&display=swap">
+<style>
+  /* Layout: scrolling portfolio — hero, phases timeline, pipeline detail, journal, about */
+  :root {
+    --bg: #0b0d11;
+    --bg-surface: #12151c;
+    --bg-raised: #181c26;
+    --fg: #dfe1e8;
+    --fg-dim: #7c8194;
+    --fg-muted: #4e5264;
+    --accent: #5b8def;
+    --accent-soft: rgba(91, 141, 239, 0.12);
+    --accent-border: rgba(91, 141, 239, 0.25);
+    --green: #4ade80;
+    --green-soft: rgba(74, 222, 128, 0.1);
+    --amber: #f59e0b;
+    --amber-soft: rgba(245, 158, 11, 0.1);
+    --red: #ef4444;
+    --border: #1e2230;
+    --radius: 10px;
+    --font-display: 'JetBrains Mono', monospace;
+    --font-body: 'DM Sans', -apple-system, sans-serif;
+    color-scheme: dark;
+  }
+
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #f5f6f8;
+      --bg-surface: #ffffff;
+      --bg-raised: #f0f1f5;
+      --fg: #1a1d26;
+      --fg-dim: #5c6070;
+      --fg-muted: #9498a6;
+      --accent: #3b6fd4;
+      --accent-soft: rgba(59, 111, 212, 0.08);
+      --accent-border: rgba(59, 111, 212, 0.2);
+      --green: #16a34a;
+      --green-soft: rgba(22, 163, 74, 0.08);
+      --amber: #d97706;
+      --amber-soft: rgba(217, 119, 6, 0.08);
+      --red: #dc2626;
+      --border: #e0e2e8;
+      color-scheme: light;
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #f5f6f8;
+    --bg-surface: #ffffff;
+    --bg-raised: #f0f1f5;
+    --fg: #1a1d26;
+    --fg-dim: #5c6070;
+    --fg-muted: #9498a6;
+    --accent: #3b6fd4;
+    --accent-soft: rgba(59, 111, 212, 0.08);
+    --accent-border: rgba(59, 111, 212, 0.2);
+    --green: #16a34a;
+    --green-soft: rgba(22, 163, 74, 0.08);
+    --amber: #d97706;
+    --amber-soft: rgba(217, 119, 6, 0.08);
+    --red: #dc2626;
+    --border: #e0e2e8;
+    color-scheme: light;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-body);
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 0;
+    line-height: 1.65;
+  }
+
+  .wrap {
+    max-width: 780px;
+    margin: 0 auto;
+    padding-block: 2.5rem 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3.5rem;
+  }
+
+  img { max-width: 100%; border-radius: var(--radius); }
+
+  /* ── Hero ── */
+  .hero {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hero-top {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .hero-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    object-fit: cover;
+    border: 1px solid var(--border);
+  }
+
+  .hero-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .hero-label {
+    font-family: var(--font-display);
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 4.5vw, 2.5rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0;
+    line-height: 1.15;
+  }
+
+  .hero-desc {
+    font-size: 1.05rem;
+    color: var(--fg-dim);
+    max-width: 600px;
+    line-height: 1.6;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .tag {
+    font-family: var(--font-display);
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 0.3em 0.7em;
+    border-radius: 5px;
+    border: 1px solid var(--border);
+  }
+  .tag--accent { background: var(--accent-soft); color: var(--accent); border-color: var(--accent-border); }
+  .tag--green { background: var(--green-soft); color: var(--green); }
+  .tag--amber { background: var(--amber-soft); color: var(--amber); }
+
+  /* ── Section ── */
+  section { display: flex; flex-direction: column; gap: 1.25rem; }
+
+  .section-label {
+    font-family: var(--font-display);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0;
+  }
+
+  h2 {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  .prose {
+    color: var(--fg-dim);
+    font-size: 0.92rem;
+    line-height: 1.7;
+  }
+
+  /* ── Photo grid ── */
+  .photo-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+  @media (max-width: 500px) { .photo-pair { grid-template-columns: 1fr; } }
+
+  .photo-card {
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--bg-surface);
+  }
+  .photo-card img { border-radius: 0; display: block; width: 100%; }
+  .photo-card figcaption {
+    padding: 0.6rem 0.75rem;
+    font-size: 0.78rem;
+    color: var(--fg-dim);
+    font-family: var(--font-display);
+  }
+
+  /* ── Timeline ── */
+  .timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+    padding-left: 1.75rem;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    background: var(--border);
+  }
+
+  .tl-phase {
+    position: relative;
+    padding: 0 0 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .tl-phase:last-child { padding-bottom: 0; }
+
+  .tl-dot {
+    position: absolute;
+    left: -1.75rem;
+    top: 4px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--accent);
+  }
+  .tl-dot--done { background: var(--accent); }
+  .tl-dot--wip { background: var(--amber); border-color: var(--amber); }
+
+  .tl-header {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .tl-num {
+    font-family: var(--font-display);
+    font-size: 0.65rem;
+    color: var(--fg-muted);
+    letter-spacing: 0.06em;
+  }
+
+  .tl-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .tl-body {
+    font-size: 0.85rem;
+    color: var(--fg-dim);
+    line-height: 1.6;
+  }
+
+  .tl-img {
+    margin-top: 0.25rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    max-height: 280px;
+    object-fit: contain;
+    background: #000;
+  }
+
+  /* ── Pipeline ── */
+  .pipe-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.6rem;
+  }
+  @media (max-width: 600px) { .pipe-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 400px) { .pipe-grid { grid-template-columns: 1fr; } }
+
+  .pipe-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .pipe-n {
+    font-family: var(--font-display);
+    font-size: 0.6rem;
+    color: var(--accent);
+    letter-spacing: 0.06em;
+  }
+  .pipe-name { font-weight: 600; font-size: 0.88rem; }
+  .pipe-tech { font-size: 0.78rem; color: var(--fg-dim); }
+
+  /* ── Features ── */
+  .feat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+  }
+  @media (max-width: 500px) { .feat-grid { grid-template-columns: 1fr; } }
+
+  .feat {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .feat-t { font-weight: 600; font-size: 0.9rem; }
+  .feat-d { font-size: 0.82rem; color: var(--fg-dim); line-height: 1.55; }
+
+  /* ── Journal ── */
+  .journal-entry {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .journal-date {
+    font-family: var(--font-display);
+    font-size: 0.7rem;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+  .journal-title { font-weight: 600; font-size: 0.9rem; }
+  .journal-body {
+    font-size: 0.82rem;
+    color: var(--fg-dim);
+    line-height: 1.6;
+  }
+  .journal-body code {
+    font-family: var(--font-display);
+    font-size: 0.78rem;
+    background: var(--bg-raised);
+    padding: 0.15em 0.4em;
+    border-radius: 4px;
+  }
+
+  /* ── Homelab ── */
+  .arch-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+  .arch-table th {
+    font-family: var(--font-display);
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-align: left;
+    padding: 0.6rem 0.75rem;
+    background: var(--bg-raised);
+    color: var(--fg-dim);
+    border-bottom: 1px solid var(--border);
+  }
+  .arch-table td {
+    padding: 0.6rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .arch-table tr:last-child td { border-bottom: none; }
+  .arch-wrap {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--bg-surface);
+  }
+
+  /* ── Stack ── */
+  .stack-row { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .stack-chip {
+    font-family: var(--font-display);
+    font-size: 0.72rem;
+    padding: 0.35em 0.7em;
+    border-radius: 5px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+  }
+
+  /* ── About ── */
+  .about {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .about-name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1rem;
+  }
+  .about-bio { font-size: 0.88rem; color: var(--fg-dim); line-height: 1.6; }
+  .certs { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+  .cert {
+    font-family: var(--font-display);
+    font-size: 0.68rem;
+    font-weight: 500;
+    padding: 0.25em 0.55em;
+    border-radius: 4px;
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  .footer {
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--fg-muted);
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+
+  /* ── Stat row ── */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.6rem;
+  }
+  @media (max-width: 500px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+  .stat {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    text-align: center;
+  }
+  .stat-val {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+  }
+  .stat-label {
+    font-size: 0.72rem;
+    color: var(--fg-dim);
+  }
+
+<div class="wrap">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-top">
+      <img class="hero-avatar" src="img/jarvis-ref.png" alt="Hermes inspiration">
+      <div class="hero-meta">
+        <span class="hero-label">Projet personnel</span>
+        <h1>H.E.R.M.E.S</h1>
+      </div>
+    </div>
+    <p class="hero-desc">Un assistant vocal IA personnel construit from scratch en Python, inspiré de Jarvis. Du câblage électrique au streaming vocal en temps réel, en passant par un VPN maison et un homelab — un projet qui mêle hardware, réseau et intelligence artificielle.</p>
+    <div class="tags">
+      <span class="tag tag--accent">Python</span>
+      <span class="tag tag--accent">Voice AI</span>
+      <span class="tag tag--accent">Homelab</span>
+      <span class="tag tag--green">En cours</span>
+      <span class="tag tag--amber">~400 lignes</span>
+    </div>
+  </section>
+
+  <!-- Chiffres -->
+  <section>
+    <div class="stats">
+      <div class="stat">
+        <span class="stat-val">6</span>
+        <span class="stat-label">Phases du projet</span>
+      </div>
+      <div class="stat">
+        <span class="stat-val">~1.8s</span>
+        <span class="stat-label">Latence 1re phrase</span>
+      </div>
+      <div class="stat">
+        <span class="stat-val">~2€</span>
+        <span class="stat-label">Coût API / mois</span>
+      </div>
+      <div class="stat">
+        <span class="stat-val">12+</span>
+        <span class="stat-label">Libs intégrées</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Vision -->
+  <section>
+    <p class="section-label">La vision</p>
+    <div class="photo-pair">
+      <figure class="photo-card">
+        <img src="img/magicmirror.png" alt="Smart mirror avec MagicMirror²">
+        <figcaption>Objectif : miroir connecté avec météo, transports RATP et calendrier</figcaption>
+      </figure>
+      <figure class="photo-card">
+        <img src="img/pir-sensor.png" alt="Capteur PIR HC-SR501">
+        <figcaption>Capteur PIR HC-SR501 pour la détection de présence</figcaption>
+      </figure>
+    </div>
+    <p class="prose">Hermes n'est pas qu'un chatbot vocal. C'est un écosystème complet : un miroir connecté mural avec dashboard de transports en temps réel, un Raspberry Pi serveur VPN, un homelab avec Proxmox et NAS, et un assistant vocal capable de chercher sur le web, donner l'heure et bientôt contrôler la domotique Zigbee.</p>
+  </section>
+
+  <!-- Timeline -->
+  <section>
+    <p class="section-label">Chronologie du projet</p>
+    <div class="timeline">
+
+      <div class="tl-phase">
+        <span class="tl-dot tl-dot--done"></span>
+        <div class="tl-header">
+          <span class="tl-num">PHASE 1</span>
+          <span class="tl-title">Écran &amp; miroir sans tain</span>
+        </div>
+        <p class="tl-body">Recherche de la dalle idéale. OLED visé (noir parfait), VA retenu en compromis. Samsung 27" VA incurvé trouvé à 50€ sur Leboncoin — léger défaut de châssis, zéro pixel mort. Miroir sans tain en vraie vitre 6mm prévu (pas de film, résultat médiocre selon la communauté MagicMirror).</p>
+      </div>
+
+      <div class="tl-phase">
+        <span class="tl-dot tl-dot--done"></span>
+        <div class="tl-header">
+          <span class="tl-num">PHASE 2</span>
+          <span class="tl-title">Câblage électrique</span>
+        </div>
+        <p class="tl-body">3 câbles sortent du mur : phase, neutre, terre. Raccordement direct via wagos dans une boîte de dérivation — pas de prise murale. Alimentation du Pi par module rail DIN Mean Well (230V → 5V). Disjoncteur identifié, wagos posés, courant testé.</p>
+      </div>
+
+      <div class="tl-phase">
+        <span class="tl-dot tl-dot--done"></span>
+        <div class="tl-header">
+          <span class="tl-num">PHASE 3</span>
+          <span class="tl-title">Raspberry Pi + MagicMirror²</span>
+        </div>
+        <p class="tl-body">Flash avec Raspberry Pi Imager, galère cloud-init (ne s'exécute qu'au premier boot, pas de seconde chance). Utilisateur créé manuellement, SSH configuré. MagicMirror² installé avec modules RATP/Transilien, custom.css écrit pour la lisibilité à 2-3m (police x2, blanc pur, espacement accru).</p>
+      </div>
+
+      <div class="tl-phase">
+        <span class="tl-dot tl-dot--done"></span>
+        <div class="tl-header">
+          <span class="tl-num">PHASE 4</span>
+          <span class="tl-title">VPN WireGuard</span>
+        </div>
+        <p class="tl-body">Tunnel VPN sur le Pi pour accès à distance depuis l'iPhone. Réseau tunnel dédié (192.168.110.0/24), port 9999/UDP. Résolu : UFW bloquait en TCP, IP forwarding + iptables MASQUERADE pour accéder au reste du réseau local. Testé en 4G — accès complet.</p>
+        <img class="tl-img" src="img/ufw-wireguard.png" alt="UFW status et WireGuard sur le Pi">
+      </div>
+
+      <div class="tl-phase">
+        <span class="tl-dot tl-dot--wip"></span>
+        <div class="tl-header">
+          <span class="tl-num">PHASE 5</span>
+          <span class="tl-title">Homelab</span>
+        </div>
+        <p class="tl-body">Architecture cible : mini PC (Proxmox) pour Zigbee2MQTT + Pi-hole, NAS Synology DS224+ en RAID1 pour le stockage. Budget global estimé ~750-1050€. Chaque machine surveillée via healthchecks.io + Pushover. Le tout dans un caisson compact prévu pour le déménagement.</p>
+      </div>
+
+      <div class="tl-phase">
+        <span class="tl-dot tl-dot--wip"></span>
+        <div class="tl-header">
+          <span class="tl-num">PHASE 6</span>
+          <span class="tl-title">Hermes — IA vocale</span>
+        </div>
+        <p class="tl-body">Le cœur du projet. Pipeline vocal complet codé from scratch en Python : wake word, VAD, transcription, LLM, TTS streaming, le tout orchestré par threads et queues. Environ 400 lignes de code, écrites exercice par exercice, en apprenant Python en même temps.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Pipeline IA detail -->
+  <section>
+    <p class="section-label">Pipeline vocal — Phase 6</p>
+    <h2>Du son au son, en ~1.8 secondes</h2>
+    <div class="pipe-grid">
+      <div class="pipe-card">
+        <span class="pipe-n">01 WAKE</span>
+        <span class="pipe-name">Hey Jarvis</span>
+        <span class="pipe-tech">OpenWakeWord, seuil 0.7, thread permanent</span>
+      </div>
+      <div class="pipe-card">
+        <span class="pipe-n">02 VAD</span>
+        <span class="pipe-name">Détection voix</span>
+        <span class="pipe-tech">Silero VAD + PyTorch, blocs de 512 samples</span>
+      </div>
+      <div class="pipe-card">
+        <span class="pipe-n">03 STT</span>
+        <span class="pipe-name">Transcription</span>
+        <span class="pipe-tech">Whisper.cpp base, ~1.4s sur CPU</span>
+      </div>
+      <div class="pipe-card">
+        <span class="pipe-n">04 LLM</span>
+        <span class="pipe-name">Claude Haiku 4.5</span>
+        <span class="pipe-tech">Streaming, historique 20 msgs, tool use</span>
+      </div>
+      <div class="pipe-card">
+        <span class="pipe-n">05 TTS</span>
+        <span class="pipe-name">Cartesia sonic-3.6</span>
+        <span class="pipe-tech">WebSocket streaming, voix française</span>
+      </div>
+      <div class="pipe-card">
+        <span class="pipe-n">06 PLAY</span>
+        <span class="pipe-name">ffplay (pipe)</span>
+        <span class="pipe-tech">PCM brut, -probesize 32, subprocess</span>
+      </div>
+    </div>
+    <p class="prose">Le streaming fonctionne phrase par phrase : Claude génère le texte en streaming, chaque phrase complète est envoyée à Cartesia via WebSocket persistant, et l'audio sort en parallèle via un pipe vers ffplay. Un thread lit la queue, un autre la remplit — la première phrase arrive pendant que Claude génère encore la suite.</p>
+  </section>
+
+  <!-- Screenshots du terminal -->
+  <section>
+    <p class="section-label">Évolution</p>
+    <div class="photo-pair">
+      <figure class="photo-card">
+        <img src="img/exercice1.png" alt="Exercice 1 — Faux Jarvis">
+        <figcaption>5 oct — Exercice 1 : faux Jarvis avec dictionnaire Python</figcaption>
+      </figure>
+      <figure class="photo-card">
+        <img src="img/piper-tts.png" alt="Exercice 2b — TTS avec Piper">
+        <figcaption>7 oct — Exercice 2b : première voix avec Piper TTS</figcaption>
+      </figure>
+    </div>
+    <p class="prose">Le code a évolué du dictionnaire de réponses statiques (exercice 1) jusqu'au pipeline complet avec streaming. Chaque exercice a été codé par moi-même, avec Claude en mode guide — jamais de copier-coller, toujours la compréhension d'abord.</p>
+  </section>
+
+  <!-- Features -->
+  <section>
+    <p class="section-label">Fonctionnalités</p>
+    <div class="feat-grid">
+      <div class="feat">
+        <span class="feat-t">Streaming phrase par phrase</span>
+        <span class="feat-d">Threading + queue.Queue : le TTS commence avant que Claude ait fini de répondre. Connexion WebSocket Cartesia persistante pour éviter le handshake à chaque phrase (~200-500ms économisés).</span>
+      </div>
+      <div class="feat">
+        <span class="feat-t">Tool Use (client-side)</span>
+        <span class="feat-d">Schéma d'outil défini, Claude retourne un bloc tool_use, exécution locale (heure, recherche web), résultat renvoyé, réponse finale. Boucle complète implémentée.</span>
+      </div>
+      <div class="feat">
+        <span class="feat-t">Barge-in (interruption)</span>
+        <span class="feat-d">player_actuel.kill() coupe ffplay pendant la réponse. BrokenPipeError géré côté TTS. En attente du speakerphone avec echo cancel hardware pour activer.</span>
+      </div>
+      <div class="feat">
+        <span class="feat-t">Wake word permanent</span>
+        <span class="feat-d">Thread dédié avec OpenWakeWord. Deux modes : veille (blocs 1280 pour le wake word) et écoute (blocs 512 pour le VAD). Retour en veille sur "au revoir".</span>
+      </div>
+      <div class="feat">
+        <span class="feat-t">Animations visuelles</span>
+        <span class="feat-d">Yeux robotiques animés via RobotEyes (idle, blink, surprise, angry, happy). Probabilités pondérées. Contraint au thread principal (Qt).</span>
+      </div>
+      <div class="feat">
+        <span class="feat-t">Conversation continue</span>
+        <span class="feat-d">Historique maintenu (20 messages max, tronqué automatiquement). Prompt système avec personnalité Jarvis complète. Recherche web intégrée.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Journal de bord -->
+  <section>
+    <p class="section-label">Journal de bord — Extraits</p>
+    <h2>Apprendre Python en construisant</h2>
+    <p class="prose">Chaque session de développement est documentée. Voici les moments clés — les erreurs qui ont le plus appris.</p>
+
+    <div class="journal-entry">
+      <span class="journal-date">5 octobre 2026</span>
+      <span class="journal-title">Les bases (exercices 1-2)</span>
+      <p class="journal-body">
+        <code>.lower</code> sans parenthèses, <code>reponse.content(0)</code> au lieu de <code>[0]</code>, <code>if historique > 20</code> au lieu de <code>len(historique) > 20</code>. Première connexion à l'API Claude. Découverte que l'API n'a pas de mémoire : il faut renvoyer tout l'historique à chaque appel.
+      </p>
+    </div>
+
+    <div class="journal-entry">
+      <span class="journal-date">7 octobre 2026</span>
+      <span class="journal-title">Streaming et threads</span>
+      <p class="journal-body">
+        <code>while "." or "!" or "?"</code> vaut toujours True (précédence des opérateurs). Découverte des listes en compréhension, des threads (<code>threading.Thread</code>), et de <code>queue.Queue</code> pour faire communiquer deux threads. Le tampon (buffer) : couper le début, garder la fin.
+      </p>
+    </div>
+
+    <div class="journal-entry">
+      <span class="journal-date">13 octobre 2026</span>
+      <span class="journal-title">Le déclic streaming TTS</span>
+      <p class="journal-body">
+        Le fix tenait à deux flags ffplay : <code>-probesize 32 -analyzeduration 0</code>. Sans ça, ffplay attendait d'analyser les données avant de jouer — crash immédiat. Benchmarks : whisper ~1.4s, Claude ~1.3s, TTS ~0.8-1.7s. Le TTS était le vrai goulot, pas whisper.
+      </p>
+    </div>
+
+    <div class="journal-entry">
+      <span class="journal-date">14 octobre 2026</span>
+      <span class="journal-title">Wake word + micro Windows</span>
+      <p class="journal-body">
+        OpenWakeWord détecte "Hey Jarvis" à 0.99. Le micro du laptop était le vrai problème de transcription — SonoBus via le réseau local + null sink PulseAudio pour utiliser le micro Windows sans retour audio. La transcription whisper est devenue bien meilleure.
+      </p>
+    </div>
+
+    <div class="journal-entry">
+      <span class="journal-date">19-20 octobre 2026</span>
+      <span class="journal-title">5 bugs dans la boucle principale</span>
+      <p class="journal-body">
+        Piège <code>while/else</code> Python (le else ne s'exécute pas sur break), <code>tapis.get()</code> fantôme qui jetait un audio, <code>mode_écoute = False</code> qui coupait l'écoute à chaque tour. Puis tentative d'animation dans un thread — abandonné : <code>cv2.imshow()</code> (Qt) doit rester dans le thread principal.
+      </p>
+    </div>
+  </section>
+
+  <!-- Architecture homelab -->
+  <section>
+    <p class="section-label">Architecture homelab</p>
+    <div class="arch-wrap">
+      <table class="arch-table">
+        <thead><tr><th>Machine</th><th>Rôle</th><th>Statut</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Raspberry Pi 4</td>
+            <td>MagicMirror² + WireGuard VPN</td>
+            <td><span class="tag tag--green" style="font-size:0.65rem">Opérationnel</span></td>
+          </tr>
+          <tr>
+            <td>Mini PC (Proxmox)</td>
+            <td>Hermes IA + Zigbee2MQTT + Pi-hole</td>
+            <td><span class="tag tag--amber" style="font-size:0.65rem">À acheter</span></td>
+          </tr>
+          <tr>
+            <td>NAS Synology DS224+</td>
+            <td>Stockage RAID1 + QuickConnect</td>
+            <td><span class="tag tag--amber" style="font-size:0.65rem">À acheter</span></td>
+          </tr>
+          <tr>
+            <td>Speakerphone USB</td>
+            <td>Micro 4-array + echo cancel hardware</td>
+            <td><span class="tag tag--amber" style="font-size:0.65rem">ReSpeaker XVF3800</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="prose">L'ensemble sera regroupé dans un caisson compact transportable, prévu pour le déménagement vers un T1 à Levallois. Le Pi reste dédié au miroir et au VPN, le mini PC prend en charge l'IA vocale et la domotique. Accès distant via WireGuard depuis l'iPhone en 4G, accès NAS pour la famille via QuickConnect Synology.</p>
+  </section>
+
+  <!-- Stack -->
+  <section>
+    <p class="section-label">Stack technique</p>
+    <div class="stack-row">
+      <span class="stack-chip">Python</span>
+      <span class="stack-chip">Anthropic API</span>
+      <span class="stack-chip">Cartesia TTS</span>
+      <span class="stack-chip">Whisper.cpp</span>
+      <span class="stack-chip">PyTorch</span>
+      <span class="stack-chip">Silero VAD</span>
+      <span class="stack-chip">OpenWakeWord</span>
+      <span class="stack-chip">sounddevice</span>
+      <span class="stack-chip">threading</span>
+      <span class="stack-chip">subprocess</span>
+      <span class="stack-chip">ffplay</span>
+      <span class="stack-chip">OpenCV</span>
+      <span class="stack-chip">WireGuard</span>
+      <span class="stack-chip">PulseAudio</span>
+      <span class="stack-chip">MagicMirror²</span>
+      <span class="stack-chip">Raspberry Pi</span>
+      <span class="stack-chip">Proxmox</span>
+      <span class="stack-chip">SonoBus</span>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section>
+    <p class="section-label">Auteur</p>
+    <div class="about">
+      <span class="about-name">Gihad Bouguerba</span>
+      <p class="about-bio">21 ans, étudiant en mastère cybersécurité à l'École 2600 (2025-2028). Alternant Security Officer au CAGIP (Crédit Agricole) — sécu offensive, Red Team, pentest, sécurité physique. Bug bounty sur Intigriti, stage pentest chez IT-STORM, scanner Prototype Pollution, SIEM Wazuh, prototype EMP. Hermes est mon premier projet Python d'envergure, construit pour apprendre en faisant.</p>
+      <div class="certs">
+        <span class="cert">eJPTv2</span>
+        <span class="cert">CRTA</span>
+        <span class="cert">CRT-ID</span>
+        <span class="cert">CPTS ~80%</span>
+        <span class="cert">AD-RTS ~70%</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Méthode -->
+  <section>
+    <p class="section-label">Méthode</p>
+    <div class="feat-grid">
+      <div class="feat">
+        <span class="feat-t">Apprendre en construisant</span>
+        <span class="feat-d">Pas de tutoriel suivi passivement. Chaque fonctionnalité est un exercice : écrire le code, lancer, debugger, comprendre l'erreur, recommencer.</span>
+      </div>
+      <div class="feat">
+        <span class="feat-t">Guidé, pas assisté</span>
+        <span class="feat-d">Claude explique et relit, mais n'écrit pas le code. Règle stricte : "ne me donne pas la réponse". Le journal de bord trace chaque erreur et chaque leçon.</span>
+      </div>
+    </div>
+  </section>
+
+  <p class="footer">H.E.R.M.E.S — Projet personnel en cours · Octobre 2026</p>
+
+</div>
+</body>
+</html>
